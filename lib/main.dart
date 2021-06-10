@@ -1,3 +1,4 @@
+import 'package:flash_chat/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/screens/welcome_screen.dart';
 import 'package:flash_chat/screens/login_screen.dart';
@@ -13,9 +14,9 @@ class FlashChat extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
           textTheme: TextTheme(
-            body1: TextStyle(color: Colors.black54),
+            body1: TextStyle(color: Colors.white),
           ),
-          scaffoldBackgroundColor: Colors.grey[700]),
+          scaffoldBackgroundColor: ACTIVE_CARD_COLOR),
       initialRoute: WelcomeScreen.id,
       routes: {
         WelcomeScreen.id: (context) => WelcomeScreen(),

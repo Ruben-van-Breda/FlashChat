@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flash_chat/constants.dart';
 import 'package:flash_chat/screens/login_screen.dart';
 import 'package:flash_chat/screens/registration_screen.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     animationForLogo =
         CurvedAnimation(parent: controller, curve: Curves.easeIn);
     animationForColorTween =
-        ColorTween(begin: Colors.amber, end: Colors.blue).animate(controller);
+        ColorTween(begin: Colors.red, end: ACTIVE_CARD_COLOR)
+            .animate(controller);
 
     controller.forward(); // start animation
 
@@ -82,45 +84,51 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             ),
             Padding(
               padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: Material(
-                elevation: 5.0,
-                color: Colors.lightBlueAccent,
-                borderRadius: BorderRadius.circular(30.0),
-                child: MaterialButton(
-                  onPressed: () {
-                    //Go to login screen.
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
-                    );
-                  },
-                  minWidth: 200.0,
-                  height: 42.0,
-                  child: Text(
-                    'Log In',
+              child: Hero(
+                tag: 'loginBtn',
+                child: Material(
+                  elevation: 5.0,
+                  color: Colors.redAccent,
+                  borderRadius: BorderRadius.circular(30.0),
+                  child: MaterialButton(
+                    onPressed: () {
+                      //Go to login screen.
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
+                    },
+                    minWidth: 200.0,
+                    height: 42.0,
+                    child: Text(
+                      'Log In',
+                    ),
                   ),
                 ),
               ),
             ),
             Padding(
               padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: Material(
-                color: Colors.blueAccent,
-                borderRadius: BorderRadius.circular(30.0),
-                elevation: 5.0,
-                child: MaterialButton(
-                  onPressed: () {
-                    //Go to registration screen.
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => RegistrationScreen()),
-                    );
-                  },
-                  minWidth: 200.0,
-                  height: 42.0,
-                  child: Text(
-                    'Register',
+              child: Hero(
+                tag: 'registerBtn',
+                child: Material(
+                  color: Colors.orangeAccent,
+                  borderRadius: BorderRadius.circular(30.0),
+                  elevation: 5.0,
+                  child: MaterialButton(
+                    onPressed: () {
+                      //Go to registration screen.
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => RegistrationScreen()),
+                      );
+                    },
+                    minWidth: 200.0,
+                    height: 42.0,
+                    child: Text(
+                      'Register',
+                    ),
                   ),
                 ),
               ),
