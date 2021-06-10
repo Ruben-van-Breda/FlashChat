@@ -12,28 +12,47 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
-  AnimationController controller;
+  AnimationController controller; // controller for animations
+  Animation animationForLogo, animationForColorTween;
   @override
   void initState() {
     super.initState();
     controller = AnimationController(
-      duration: Duration(seconds: 1),
-      vsync: this,
-      upperBound: 45.0,
-      lowerBound: 1,
-    );
+        duration: Duration(seconds: 1),
+        vsync: this,
+        upperBound: 1,
+        lowerBound: 0);
 
-    controller.forward();
+    animationForLogo =
+        CurvedAnimation(parent: controller, curve: Curves.easeIn);
+    animationForColorTween =
+        ColorTween(begin: Colors.amber, end: Colors.blue).animate(controller);
+
+    controller.forward(); // start animation
+
+    //   animation.addStatusListener((status) {
+    //     print(status);
+    //     // if (status == AnimationStatus.completed) {
+
+    //     // }
+    //   });
+
     controller.addListener(() {
       setState(() {});
-      print(controller.value);
+      // print(animation.value);
     });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose(); // free animation resources
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: animationForColorTween.value,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
@@ -46,13 +65,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   tag: 'logo',
                   child: Container(
                     child: Image.asset('images/logo.png'),
-                    height: controller.value,
+                    height: animationForLogo.value * 80,
                   ),
                 ),
                 Text(
                   'Flash Chat',
                   style: TextStyle(
-                    fontSize: controller.value,
+                    fontSize: 45,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
