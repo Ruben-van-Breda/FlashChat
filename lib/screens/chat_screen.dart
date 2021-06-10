@@ -29,6 +29,13 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void getMessages() async {
+    final messages = await _firestore.collection('messages').get();
+    for (var msg in messages.docs) {
+      print(msg.data());
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -45,8 +52,9 @@ class _ChatScreenState extends State<ChatScreen> {
               icon: Icon(Icons.close),
               onPressed: () {
                 //Implement logout functionality
-                _auth.signOut();
-                Navigator.pop(context);
+                // _auth.signOut();
+                // Navigator.pop(context);
+                getMessages();
               }),
         ],
         title: Text('⚡️Chat'),
@@ -74,7 +82,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   FlatButton(
                     onPressed: () {
                       //Implement send functionality.
-                      _firestore.collection('messages').add({
+                      _firestore
+                          .collection('users')
+                          .doc("${loggedInUser.email}")
+                          .collection('messages')
+                          .add({
                         'sender': loggedInUser.email,
                         'text': messageText,
                       });
