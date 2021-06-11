@@ -35,3 +35,6 @@ const kTextFieldDecoration = InputDecoration(
     borderRadius: BorderRadius.all(Radius.circular(32.0)),
   ),
 );
+
+// const kMessageCollection =
+    // _firestore.collection('messages').doc('${loggedInUser.email}');

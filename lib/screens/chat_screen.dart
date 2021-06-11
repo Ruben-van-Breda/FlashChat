@@ -11,6 +11,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final _firestore = FirebaseFirestore.instance;
+  var _messagesCollection;
   final _auth = FirebaseAuth.instance;
   User loggedInUser;
 
@@ -23,16 +24,33 @@ class _ChatScreenState extends State<ChatScreen> {
       if (user != null) {
         loggedInUser = user;
         print(loggedInUser.email);
+
+        _messagesCollection =
+            _firestore.collection('users').doc('${loggedInUser.email}');
       }
     } catch (e) {
       print(e);
     }
   }
 
-  void getMessages() async {
+  /* void getMessages() async {
     final messages = await _firestore.collection('messages').get();
     for (var msg in messages.docs) {
       print(msg.data());
+    }
+  }*/
+
+  Future<void> getMessagesStream() async {
+    if (loggedInUser == null) return;
+
+    await for (var snap in _firestore
+        .collection('users')
+        .doc('${loggedInUser.email}')
+        .collection('messages')
+        .snapshots()) {
+      for (var msg in snap.docs) {
+        print(msg.data());
+      }
     }
   }
 
@@ -54,7 +72,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 //Implement logout functionality
                 // _auth.signOut();
                 // Navigator.pop(context);
-                getMessages();
+                // getMessages();
+                getMessagesStream();
               }),
         ],
         title: Text('⚡️Chat'),
@@ -82,14 +101,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   FlatButton(
                     onPressed: () {
                       //Implement send functionality.
-                      _firestore
-                          .collection('users')
-                          .doc("${loggedInUser.email}")
-                          .collection('messages')
-                          .add({
-                        'sender': loggedInUser.email,
-                        'text': messageText,
-                      });
+                      sendMessage(messageText, loggedInUser.email);
                     },
                     child: Text(
                       'Send',
@@ -103,5 +115,13 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
     );
+  }
+
+  void sendMessage(String msgTxt, String sender) {
+    _firestore
+        .collection('users')
+        .doc('${loggedInUser.email}')
+        .collection('messages')
+        .add({'sender': sender, 'text': msgTxt, 'timestamp': Timestamp.now()});
   }
 }
