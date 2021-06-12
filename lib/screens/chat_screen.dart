@@ -11,7 +11,6 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final _firestore = FirebaseFirestore.instance;
-  var _messagesCollection;
   final _auth = FirebaseAuth.instance;
   User loggedInUser;
 
@@ -22,14 +21,15 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       final user = await _auth.currentUser;
       if (user != null) {
-        loggedInUser = user;
+        setState(() {
+          loggedInUser = user;
+        });
         print(loggedInUser.email);
 
-        _messagesCollection =
-            _firestore.collection('users').doc('${loggedInUser.email}');
+        // _messagesCollection =            _firestore.collection('users').doc('${loggedInUser.email}');
       }
     } catch (e) {
-      print(e);
+      print('Error $e');
     }
   }
 
@@ -42,7 +42,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   //Get notified of any changes
   Future<void> getMessagesStream() async {
-    if (loggedInUser == null) return;
+    // if (loggedInUser == null) return;
 
     await for (var snap in _firestore
         .collection('users')
@@ -88,25 +88,38 @@ class _ChatScreenState extends State<ChatScreen> {
             StreamBuilder<QuerySnapshot>(
               stream: _firestore
                   .collection('users')
-                  .doc('${loggedInUser.email}')
+                  .doc('${loggedInUser?.email}')
                   .collection('messages')
                   .snapshots(),
               builder: (context, asyncsnap) {
-                if (asyncsnap.hasData) {
-                  final messages = asyncsnap.data.docs;
-                  List<Text> messageWidgets = [];
-                  for (var msg in messages) {
-                    final messageText = msg.get('text');
-                    final messageSender = msg.get('sender');
-
-                    final widget = Text('$messageText from $messageSender');
-                    messageWidgets.add(widget);
-                  }
-                  return Column(
-                    children: messageWidgets,
+                if (!asyncsnap.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.amberAccent,
+                    ),
                   );
                 }
-                return null;
+                final messages = asyncsnap.data;
+                List<Text> messageWidgets = [];
+                for (var msg in messages.docs) {
+                  final messageText = msg.get('text');
+                  final messageSender = msg.get('sender');
+
+                  final widget = Text(
+                    '$messageText from $messageSender.',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        backgroundColor: Colors.green),
+                  );
+
+                  messageWidgets.add(widget);
+                }
+                return Expanded(
+                  child: ListView(
+                    children: messageWidgets,
+                  ),
+                );
               },
             ),
             Container(
